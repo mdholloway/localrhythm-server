@@ -33,7 +33,7 @@ var updateDatabase = function(deviceId){
   pg.connect(conString, function(err, client, done){
 	client.query('SELECT device_id FROM tokens WHERE device_id = \'' + deviceId + '\'', function(err, result){
       // add new row if device id not in database
-      if (result.rows[0] == deviceId) {
+      if (result.rows[0] == undefined || result.rows[0].device_id != deviceId) {
 	    console.log('Could not find device ' + deviceId + ' in db.  Adding new row.' + '\n');
         client.query('INSERT INTO tokens VALUES (\'' + deviceId + '\', \'' + access_token + '\', \'' + refresh_token 
 			+ '\', CURRENT_TIMESTAMP)', function(err, result){
@@ -43,7 +43,7 @@ var updateDatabase = function(deviceId){
 	      console.log('ADDING NEW row for device id ' + deviceId + ' with access token ' + access_token + ', refresh token ' + refresh_token + '\n');		  
 		  done();
 		}); // end of inner client.query block #1
-      } else {
+      } else if (result.rows[0].device_id == deviceId){
         console.log('Found device ' + deviceId + ' in database!');
         client.query('UPDATE tokens SET access_token = \'' + access_token + '\' , refresh_token = \'' + refresh_token 
 		    + '\', timestamp = CURRENT_TIMESTAMP WHERE device_id = \'' + deviceId + '\'', function(err, result){
@@ -133,9 +133,7 @@ app.get('/refresh_token', function(req, res) {
 	      if (!error && response.statusCode === 200) {
 	        access_token = body.access_token;
 			console.log('PASSING NEW access token ' + access_token + '\n');
-	        res.send({
-	          'access_token': access_token
-	        });
+	        res.send(access_token);
 	      }  // end of inner 'if' block
 	    });  //end of request.post(...)
 	  } //end of else block
@@ -143,6 +141,30 @@ app.get('/refresh_token', function(req, res) {
     }); //end of client.query block
   });  //end of client.connect block
 }); 
+
+app.get('/delete', function(req, res) {
+	
+  deviceId = req.query.uid;
+
+  // get refresh token from db if it exists, otherwise send back null response
+  pg.connect(conString, function(err, client, done){
+  	if (err) {
+  	  return console.error('could not connect to postgres', err);
+    }
+    client.query('DELETE FROM tokens WHERE device_id = \'' + deviceId + '\'', function(err, result) {
+      if (err) {
+        return console.error('error running query', err);
+      }
+      if (result == 'DELETE 1') {
+		console.log('DELETED record for device id ' + deviceId);
+		res.send('OK');
+	  } else {
+		console.log('DELETE for device id ' + deviceId + ' failed!');
+      }
+      done();
+    }); //end of client.query block
+  }); //end of client.connect block
+});
 
 httpServer.listen(80);
 httpsServer.listen(443);
