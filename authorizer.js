@@ -1,3 +1,6 @@
+/**
+ * © 2014 michael david holloway
+ */
 var express = require('express');
 var http = require('http');
 var https = require('https');
@@ -19,7 +22,7 @@ var client_secret = 'MY-CLIENT-SECRET';
 var callback_redirect_uri = 'MY-CALLBACK-URI';
 
 var pg = require('pg');
-var conString = "PATH-TO-MY-DATABASE"
+var conString = "PATH-TO-MY-DATABASE";
 var client = new pg.Client(conString);
 
 var access_token;
