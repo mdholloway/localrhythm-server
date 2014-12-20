@@ -2,7 +2,6 @@
  * © 2014 michael david holloway
  */
 var express = require('express');
-var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var pg = require('pg');
@@ -166,6 +165,5 @@ app.get('/delete', function(req, res) {
   }); //end of client.connect block
 });
 
-httpServer.listen(80);
 httpsServer.listen(443);
-console.log('Listening on 80 (HTTP), 443 (HTTPS)');
+console.log('Listening on 443 (HTTPS)');
