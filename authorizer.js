@@ -13,7 +13,6 @@ var certificate = fs.readFileSync('MY-SSL-CERT', 'utf8');
 var credentials = {key: privKey, cert: certificate};
 
 var app = express();
-var httpServer = http.createServer(app);
 var httpsServer = https.createServer(credentials, app);
 
 var client_id = 'MY-CLIENT-ID'; 
