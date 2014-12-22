@@ -33,22 +33,22 @@ var updateDatabase = function(deviceId){
       // add new row if device id not in database
       if (result.rows[0] == undefined || result.rows[0].device_id != deviceId) {
 	    console.log('Could not find device ' + deviceId + ' in db.  Adding new row.' + '\n');
-        client.query('INSERT INTO tokens VALUES (\'' + deviceId + '\', \'' + access_token + '\', \'' + refresh_token 
+        client.query('INSERT INTO tokens VALUES (\'' + deviceId + '\', \'' + refresh_token 
 			+ '\', CURRENT_TIMESTAMP)', function(err, result){
 	      if(err){
 		    return console.error('error inserting new row for device id ' + deviceId, err);
 	      }
-	      console.log('ADDING NEW row for device id ' + deviceId + ' with access token ' + access_token + ', refresh token ' + refresh_token + '\n');		  
+	      console.log('ADDING NEW row for device id ' + deviceId + ' with refresh token ' + refresh_token + '\n');		  
 		  done();
 		}); // end of inner client.query block #1
       } else if (result.rows[0].device_id == deviceId){
         console.log('Found device ' + deviceId + ' in database!');
-        client.query('UPDATE tokens SET access_token = \'' + access_token + '\' , refresh_token = \'' + refresh_token 
+        client.query('UPDATE tokens SET refresh_token = \'' + refresh_token 
 		    + '\', timestamp = CURRENT_TIMESTAMP WHERE device_id = \'' + deviceId + '\'', function(err, result){
 		  if(err){
 		    return console.error('error updating row for device id ' + deviceId, err);
 		  }
-		  console.log('UPDATING row for device id ' + deviceId + ' with ACCESS TOKEN ' + access_token + ', REFRESH TOKEN ' + refresh_token + '\n');
+		  console.log('UPDATING row for device id ' + deviceId + ' with REFRESH TOKEN ' + refresh_token + '\n');
 	      done();
 	    }); //end of inner client.query block #2
       } //end of else block
@@ -164,5 +164,5 @@ app.get('/delete', function(req, res) {
   }); //end of client.connect block
 });
 
-httpsServer.listen(443);
-console.log('Listening on 443 (HTTPS)');
+httpsServer.listen(8443);
+console.log('Listening on 8443 (HTTPS)');
